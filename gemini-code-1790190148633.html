@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ministerio de Alabanza</title>
+  <!-- Tailwind CSS para diseño moderno -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome para íconos -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gray-100 font-sans text-gray-800">
+
+  <!-- BARRA DE NAVEGACIÓN -->
+  <nav class="bg-indigo-700 text-white shadow-md sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+      <h1 class="text-xl font-bold flex items-center gap-2">
+        <i class="fa-solid fa-music"></i> Portal Alabanza
+      </h1>
+      <div id="user-info" class="hidden items-center gap-3">
+        <span id="user-display" class="text-sm font-medium bg-indigo-800 px-3 py-1 rounded-full"></span>
+        <button onclick="logout()" class="text-xs bg-red-500 hover:bg-red-600 px-2 py-1 rounded transition">Salir</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="max-w-7xl mx-auto p-4 md:p-6 grid grid-cols-1 gap-8">
+
+    <!-- SECCIÓN 1: LOGIN / REGISTRO POR CÉDULA -->
+    <section id="login-section" class="bg-white p-6 rounded-xl shadow-md max-w-md mx-auto w-full">
+      <h2 class="text-2xl font-bold text-center text-indigo-700 mb-4">Ingreso de Integrantes</h2>
+      <form onsubmit="handleLogin(event)" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium mb-1">Cédula / Documento de Identidad:</label>
+          <input type="text" id="cedula" required placeholder="Ej: 123456789" class="w-full border rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 outline-none">
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1">Nombre Completo:</label>
+          <input type="text" id="nombre" required placeholder="Ej: Juan Pérez" class="w-full border rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 outline-none">
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1">Rol / Área:</label>
+          <select id="rol" class="w-full border rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 outline-none">
+            <option value="integrante">Integrante de Alabanza</option>
+            <option value="lider">Líder de Alabanza</option>
+            <option value="maestro">Maestro de Enseñanza</option>
+          </select>
+        </div>
+        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-lg transition">
+          Ingresar / Registrarse
+        </button>
+      </form>
+    </section>
+
+    <!-- CONTENIDO PRINCIPAL (Se muestra tras iniciar sesión) -->
+    <main id="app-content" class="hidden space-y-8">
+
+      <!-- SECCIÓN 2: MI SERVICIO Y CONFIRMACIÓN -->
+      <section class="bg-white p-6 rounded-xl shadow-md border-l-4 border-indigo-600">
+        <h2 class="text-xl font-bold mb-4 flex items-center gap-2 text-indigo-700">
+          <i class="fa-solid fa-calendar-check"></i> Próximo Servicio Asignado
+        </h2>
+        
+        <div id="servicio-card" class="bg-indigo-50 p-4 rounded-lg flex flex-col md:flex-row justify-between items-center gap-4">
+          <div>
+            <p class="text-lg font-bold text-gray-900">Domingo, 27 de Septiembre</p>
+            <p class="text-sm text-gray-600"><strong>Rol asignado:</strong> Voz Principal / Guitarra</p>
+            <p class="text-sm text-gray-600"><strong>Hora de cita / ensayo:</strong> 7:30 AM</p>
+            <div class="mt-2">
+              <span id="estado-asistencia" class="text-xs font-semibold px-2.5 py-1 rounded bg-yellow-200 text-yellow-800">
+                Pendiente de Confirmar
+              </span>
+            </div>
+          </div>
+
+          <div class="flex gap-2">
+            <button onclick="confirmarAsistencia('Confirmado')" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium text-sm transition flex items-center gap-1">
+              <i class="fa-solid fa-circle-check"></i> Asistiré
+            </button>
+            <button onclick="confirmarAsistencia('No Podré Asistir')" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium text-sm transition flex items-center gap-1">
+              <i class="fa-solid fa-circle-xmark"></i> No puedo
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECCIÓN 3: APARTADO PARA LÍDERES DE ALABANZA (Canciones Trimestrales) -->
+      <section class="bg-white p-6 rounded-xl shadow-md">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+            <i class="fa-solid fa-list-check"></i> Repertorio y Repertorio Trimestral
+          </h2>
+          <span class="text-xs bg-indigo-100 text-indigo-700 px-2.5 py-1 rounded-full font-semibold">Exclusivo Líderes</span>
+        </div>
+
+        <!-- Formulario solo interactivo si es líder -->
+        <form onsubmit="agregarCancion(event)" class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-6 bg-gray-50 p-4 rounded-lg border">
+          <input type="text" id="cancion-nombre" placeholder="Nombre de la canción" required class="border rounded p-2 text-sm">
+          <input type="text" id="cancion-artista" placeholder="Artista / Banda" required class="border rounded p-2 text-sm">
+          <select id="cancion-trimestre" class="border rounded p-2 text-sm">
+            <option value="Trimestre 1">Trimestre 1 (Ene - Mar)</option>
+            <option value="Trimestre 2">Trimestre 2 (Abr - Jun)</option>
+            <option value="Trimestre 3">Trimestre 3 (Jul - Sep)</option>
+            <option value="Trimestre 4">Trimestre 4 (Oct - Dic)</option>
+          </select>
+          <button type="submit" class="bg-indigo-600 text-white rounded p-2 text-sm font-semibold hover:bg-indigo-700">
+            + Agregar Canción
+          </button>
+        </form>
+
+        <!-- Lista de canciones subidas -->
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm text-gray-600">
+            <thead class="bg-gray-100 text-gray-700 uppercase text-xs">
+              <tr>
+                <th class="p-3">Canción</th>
+                <th class="p-3">Artista</th>
+                <th class="p-3">Trimestre</th>
+                <th class="p-3">Enlace / Tono</th>
+              </tr>
+            </thead>
+            <tbody id="lista-canciones">
+              <tr class="border-b">
+                <td class="p-3 font-medium text-gray-900">La Bondad de Dios</td>
+                <td class="p-3">Bethel Music</td>
+                <td class="p-3"><span class="bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded">Trimestre 4</span></td>
+                <td class="p-3"><a href="#" class="text-indigo-600 underline">Ver Acordes (Sol)</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- SECCIÓN 4: ENSEÑANZA Y MAESTROS DOMINICALES -->
+      <section class="bg-white p-6 rounded-xl shadow-md">
+        <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+          <i class="fa-solid fa-book-open"></i> Maestros de Enseñanza (Domingos)
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="border rounded-lg p-4 bg-amber-50 border-amber-200">
+            <span class="text-xs font-bold text-amber-800 uppercase">Este Domingo</span>
+            <h3 class="font-bold text-lg mt-1">Carlos Rodríguez</h3>
+            <p class="text-sm text-gray-600"><strong>Tema:</strong> La Adoración en Espíritu y Verdad</p>
+            <p class="text-xs text-gray-500 mt-2">Fecha: 27 de Septiembre</p>
+          </div>
+          <div class="border rounded-lg p-4 bg-gray-50">
+            <span class="text-xs font-bold text-gray-500 uppercase">Próximo Domingo</span>
+            <h3 class="font-bold text-lg mt-1">Ana Martínez</h3>
+            <p class="text-sm text-gray-600"><strong>Tema:</strong> El Corazón del Servidor</p>
+            <p class="text-xs text-gray-500 mt-2">Fecha: 04 de Octubre</p>
+          </div>
+          <div class="border rounded-lg p-4 bg-gray-50">
+            <span class="text-xs font-bold text-gray-500 uppercase">Siguiente Domingo</span>
+            <h3 class="font-bold text-lg mt-1">David Gómez</h3>
+            <p class="text-sm text-gray-600"><strong>Tema:</strong> Mayordomía del Talento</p>
+            <p class="text-xs text-gray-500 mt-2">Fecha: 11 de Octubre</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECCIÓN 5: REUNIONES Y CALENDARIO DE EVENTOS -->
+      <section class="bg-white p-6 rounded-xl shadow-md">
+        <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+          <i class="fa-solid fa-people-group"></i> Reuniones y Eventos
+        </h2>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <!-- Lista de próximas reuniones -->
+          <div class="space-y-3 lg:col-span-1">
+            <div class="p-3 border-l-4 border-indigo-500 bg-gray-50 rounded">
+              <p class="font-semibold text-sm">Ensayo General</p>
+              <p class="text-xs text-gray-500"><i class="fa-regular fa-clock"></i> Jueves - 7:00 PM</p>
+            </div>
+            <div class="p-3 border-l-4 border-green-500 bg-gray-50 rounded">
+              <p class="font-semibold text-sm">Reunión de Oración de Alabanza</p>
+              <p class="text-xs text-gray-500"><i class="fa-regular fa-clock"></i> Sábado - 6:00 AM</p>
+            </div>
+            <div class="p-3 border-l-4 border-purple-500 bg-gray-50 rounded">
+              <p class="font-semibold text-sm">Capacitación Técnica y Sonido</p>
+              <p class="text-xs text-gray-500"><i class="fa-regular fa-clock"></i> 15 de Octubre - 3:00 PM</p>
+            </div>
+          </div>
+
+          <!-- Vista previa del calendario -->
+          <div class="lg:col-span-2 border rounded-lg p-4 bg-gray-50">
+            <div class="flex justify-between items-center mb-4">
+              <h3 class="font-bold text-gray-700">Calendario de Eventos - Septiembre/Octubre</h3>
+            </div>
+            <div class="grid grid-cols-7 gap-1 text-center text-xs font-semibold text-gray-600 mb-2">
+              <div>Lun</div><div>Mar</div><div>Mié</div><div>Jue</div><div>Vie</div><div>Sáb</div><div>Dom</div>
+            </div>
+            <!-- Días simulados del calendario -->
+            <div class="grid grid-cols-7 gap-1 text-center text-sm">
+              <div class="p-2 text-gray-400">21</div><div class="p-2">22</div><div class="p-2">23</div>
+              <div class="p-2 bg-indigo-100 text-indigo-700 font-bold rounded">24 (Ensayo)</div>
+              <div class="p-2">25</div>
+              <div class="p-2 bg-green-100 text-green-700 font-bold rounded">26 (Oración)</div>
+              <div class="p-2 bg-amber-100 text-amber-700 font-bold rounded">27 (Servicio)</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- SCRIPT LÓGICA -->
+  <script>
+    // Manejo del Login/Registro por Cédula
+    function handleLogin(e) {
+      e.preventDefault();
+      const cedula = document.getElementById('cedula').value;
+      const nombre = document.getElementById('nombre').value;
+      const rol = document.getElementById('rol').value;
+
+      // Guardar en almacenamiento local (Simulación)
+      const user = { cedula, nombre, rol };
+      localStorage.setItem('user_alabanza', JSON.stringify(user));
+
+      showApp(user);
+    }
+
+    function showApp(user) {
+      document.getElementById('login-section').classList.add('hidden');
+      document.getElementById('app-content').classList.remove('hidden');
+      document.getElementById('user-info').classList.remove('hidden');
+      document.getElementById('user-info').classList.add('flex');
+      document.getElementById('user-display').innerText = `${user.nombre} (${user.rol.toUpperCase()})`;
+    }
+
+    function logout() {
+      localStorage.removeItem('user_alabanza');
+      location.reload();
+    }
+
+    // Confirmación de Asistencia
+    function confirmarAsistencia(estado) {
+      const tag = document.getElementById('estado-asistencia');
+      tag.innerText = estado;
+      
+      if (estado === 'Confirmado') {
+        tag.className = 'text-xs font-semibold px-2.5 py-1 rounded bg-green-200 text-green-800';
+        alert('¡Gracias por confirmar tu servicio!');
+      } else {
+        tag.className = 'text-xs font-semibold px-2.5 py-1 rounded bg-red-200 text-red-800';
+        alert('Has marcado que no asistirás. Recuerda notificar a tu líder.');
+      }
+    }
+
+    // Función para agregar canción (Para Líderes)
+    function agregarCancion(e) {
+      e.preventDefault();
+      const nombre = document.getElementById('cancion-nombre').value;
+      const artista = document.getElementById('cancion-artista').value;
+      const trimestre = document.getElementById('cancion-trimestre').value;
+
+      const tbody = document.getElementById('lista-canciones');
+      const tr = document.createElement('tr');
+      tr.className = 'border-b';
+      tr.innerHTML = `
+        <td class="p-3 font-medium text-gray-900">${nombre}</td>
+        <td class="p-3">${artista}</td>
+        <td class="p-3"><span class="bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded">${trimestre}</span></td>
+        <td class="p-3"><a href="#" class="text-indigo-600 underline">Ver Acordes</a></td>
+      `;
+      tbody.appendChild(tr);
+
+      // Limpiar formulario
+      document.getElementById('cancion-nombre').value = '';
+      document.getElementById('cancion-artista').value = '';
+    }
+
+    // Verificar si ya hay un usuario cargado al abrir la página
+    window.onload = function() {
+      const savedUser = localStorage.getItem('user_alabanza');
+      if (savedUser) {
+        showApp(JSON.parse(savedUser));
+      }
+    };
+  </script>
+</body>
+</html>
