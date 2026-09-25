@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal Ministerio de Alabanza</title>
+  <style>
+    :root {
+      --primary: #1e3a8a;
+      --secondary: #3b82f6;
+      --accent: #10b981;
+      --danger: #ef4444;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #1e293b;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); padding-bottom: 40px; }
+    
+    header { background-color: var(--primary); color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+    nav button { background: transparent; border: none; color: white; padding: 0.5rem 1rem; cursor: pointer; font-size: 0.95rem; }
+    nav button.active { border-bottom: 2px solid white; font-weight: bold; }
+
+    .container { max-width: 1100px; margin: 2rem auto; padding: 0 1rem; }
+    .card { background: var(--card); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+    h2 { margin-bottom: 1rem; color: var(--primary); border-bottom: 2px solid #e2e8f0; padding-bottom: 0.5rem; }
+
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+    .btn { background: var(--secondary); color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 6px; cursor: pointer; font-weight: 500; }
+    .btn-success { background: var(--accent); }
+    .btn-danger { background: var(--danger); }
+    
+    form input, form select, form textarea { width: 100%; padding: 0.6rem; margin-bottom: 1rem; border: 1px solid #cbd5e1; border-radius: 6px; }
+    .badge { padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.8rem; font-weight: bold; color: white; }
+    .badge-pending { background: #f59e0b; }
+    .badge-confirmed { background: var(--accent); }
+    .badge-declined { background: var(--danger); }
+
+    .section { display: none; }
+    .section.active { display: block; }
+    
+    .admin-banner { background: #fef3c7; border-left: 4px solid #f59e0b; padding: 1rem; margin-bottom: 1rem; border-radius: 4px; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Ministerio de Alabanza</h1>
+    <nav>
+      <button class="nav-btn active" onclick="showSection('cronograma')">Mi Cronograma</button>
+      <button class="nav-btn" onclick="showSection('repertorio')">Canciones Trimestrales</button>
+      <button class="nav-btn" onclick="showSection('ensenanzas')">Enseñanzas & Maestros</button>
+      <button class="nav-btn" onclick="showSection('reuniones')">Reuniones</button>
+      <button class="nav-btn" onclick="showSection('registro')">Registro / Login</button>
+      <button class="nav-btn" onclick="showSection('admin')">Panel Admin</button>
+    </nav>
+  </header>
+
+  <div class="container">
+
+    <!-- SECCIÓN: CRONOGRAMA Y ASISTENCIA -->
+    <div id="cronograma" class="section active">
+      <div class="card">
+        <h2>Aviso de Servicio Próximo</h2>
+        <div id="mi-servicio-card">
+          <p><strong>Fecha:</strong> Domingo, 12 de Noviembre</p>
+          <p><strong>Rol Asignado:</strong> Voz Principal / Guitarra</p>
+          <p><strong>Estado Actual:</strong> <span class="badge badge-pending">Pendiente por Confirmar</span></p>
+          <br>
+          <p>¿Confirmas tu asistencia para el servicio asignado?</p><br>
+          <button class="btn btn-success" onclick="confirmarServicio(true)">Sí, puedo asistir</button>
+          <button class="btn btn-danger" onclick="confirmarServicio(false)">No puedo asistir</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECCIÓN: REPERTORIO TRIMESTRAL (LÍDERES) -->
+    <div id="repertorio" class="section">
+      <div class="card">
+        <h2>Subir Canciones Trimestrales (Líderes)</h2>
+        <form id="form-cancion" onsubmit="agregarCancion(event)">
+          <input type="text" id="cancion-titulo" placeholder="Título de la Canción" required>
+          <input type="text" id="cancion-artista" placeholder="Artista / Grupo" required>
+          <input type="text" id="cancion-tono" placeholder="Tono (Ej: G, C, Bm)" required>
+          <select id="cancion-trimestre">
+            <option value="T1">Trimestre 1 (Ene - Mar)</option>
+            <option value="T2">Trimestre 2 (Abr - Jun)</option>
+            <option value="T3">Trimestre 3 (Jul - Sep)</option>
+            <option value="T4">Trimestre 4 (Oct - Dic)</option>
+          </select>
+          <button type="submit" class="btn">Publicar Canción</button>
+        </form>
+      </div>
+      <div class="card">
+        <h2>Repertorio Actual</h2>
+        <ul id="lista-canciones"></ul>
+      </div>
+    </div>
+
+    <!-- SECCIÓN: ENSEÑANZAS Y MAESTROS -->
+    <div id="ensenanzas" class="section">
+      <div class="card">
+        <h2>Espacio de Enseñanza & Maestros Asignados</h2>
+        <p>Designación de maestros para cada domingo del mes:</p><br>
+        <div class="grid" id="grid-ensenanzas">
+          <!-- Dinámico -->
+        </div>
+      </div>
+    </div>
+
+    <!-- SECCIÓN: REUNIONES Y CALENDARIO -->
+    <div id="reuniones" class="section">
+      <div class="card">
+        <h2>Calendario de Reuniones y Ensayos</h2>
+        <div id="lista-reuniones">
+          <!-- Contenido de reuniones -->
+        </div>
+      </div>
+    </div>
+
+    <!-- SECCIÓN: REGISTRO E IDENTIFICACIÓN (CÉDULA) -->
+    <div id="registro" class="section">
+      <div class="card">
+        <h2>Registro de Integrantes por Cédula</h2>
+        <form id="form-registro" onsubmit="registrarUsuario(event)">
+          <input type="text" id="reg-nombre" placeholder="Nombre Completo" required>
+          <input type="text" id="reg-cedula" placeholder="Número de Cédula" required>
+          <select id="reg-rol">
+            <option value="Instrumentista">Instrumentista</option>
+            <option value="Voz">Voz / Canto</option>
+            <option value="Lider">Líder de Alabanza</option>
+            <option value="Director">Maestro / Servidor</option>
+          </select>
+          <button type="submit" class="btn">Registrarse</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- SECCIÓN: PANEL DE ADMINISTRACIÓN (PROPIETARIO) -->
+    <div id="admin" class="section">
+      <div class="admin-banner">
+        <strong>Acceso de Propietario:</strong> Desde este panel puedes agregar/quitar integrantes y agendar reuniones generales.
+      </div>
+      <div class="card">
+        <h2>Gestión de Reuniones (Crear/Eliminar)</h2>
+        <form id="form-admin-reunion" onsubmit="crearReunionAdmin(event)">
+          <input type="text" id="admin-reu-titulo" placeholder="Nombre de la Reunión/Ensayo" required>
+          <input type="date" id="admin-reu-fecha" required>
+          <input type="time" id="admin-reu-hora" required>
+          <button type="submit" class="btn">Agendar Reunión</button>
+        </form>
+      </div>
+      <div class="card">
+        <h2>Integrantes Registrados</h2>
+        <ul id="admin-lista-usuarios"></ul>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // Cambio de Pestañas Navegación
+    function showSection(sectionId) {
+      document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+      document.getElementById(sectionId).classList.add('active');
+      event.target.classList.add('active');
+    }
+
+    // Lógica para Confirmación de Servicio
+    function confirmarServicio(asistira) {
+      const card = document.getElementById('mi-servicio-card');
+      if (asistira) {
+        card.querySelector('.badge').className = 'badge badge-confirmed';
+        card.querySelector('.badge').innerText = 'Confirmado';
+      } else {
+        card.querySelector('.badge').className = 'badge badge-declined';
+        card.querySelector('.badge').innerText = 'Declinado / Reemplazo Requerido';
+      }
+    }
+
+    // Datos iniciales en localStorage
+    let canciones = JSON.parse(localStorage.getItem('canciones')) || [
+      { titulo: 'La Bondad de Dios', artista: 'Bethel Music', tono: 'G', trimestre: 'T4' }
+    ];
+    let reuniones = JSON.parse(localStorage.getItem('reuniones')) || [
+      { titulo: 'Ensayo General de Alabanza', fecha: '2026-10-15', hora: '19:00' }
+    ];
+    let usuarios = JSON.parse(localStorage.getItem('usuarios')) || [
+      { nombre: 'Carlos Pérez', cedula: '10203040', rol: 'Líder' }
+    ];
+
+    // Cargar Canciones
+    function renderCanciones() {
+      const lista = document.getElementById('lista-canciones');
+      lista.innerHTML = canciones.map(c => `<li><strong>${c.titulo}</strong> - ${c.artista} (Tono: ${c.tono}) [${c.trimestre}]</li>`).join('');
+    }
+
+    function agregarCancion(e) {
+      e.preventDefault();
+      const nueva = {
+        titulo: document.getElementById('cancion-titulo').value,
+        artista: document.getElementById('cancion-artista').value,
+        tono: document.getElementById('cancion-tono').value,
+        trimestre: document.getElementById('cancion-trimestre').value
+      };
+      canciones.push(nueva);
+      localStorage.setItem('canciones', JSON.stringify(canciones));
+      renderCanciones();
+      e.target.reset();
+    }
+
+    // Registrar Usuario por Cédula
+    function registrarUsuario(e) {
+      e.preventDefault();
+      const nuevo = {
+        nombre: document.getElementById('reg-nombre').value,
+        cedula: document.getElementById('reg-cedula').value,
+        rol: document.getElementById('reg-rol').value
+      };
+      usuarios.push(nuevo);
+      localStorage.setItem('usuarios', JSON.stringify(usuarios));
+      renderUsuarios();
+      alert('Registro completado exitosamente.');
+      e.target.reset();
+    }
+
+    // Renderizar Reuniones
+    function renderReuniones() {
+      const contenedor = document.getElementById('lista-reuniones');
+      contenedor.innerHTML = reuniones.map(r => `
+        <div style="border-left: 3px solid var(--primary); padding-left: 1rem; margin-bottom: 1rem;">
+          <h4>${r.titulo}</h4>
+          <p>📅 ${r.fecha} - ⏰ ${r.hora} hs</p>
+        </div>
+      `).join('');
+    }
+
+    function crearReunionAdmin(e) {
+      e.preventDefault();
+      const nueva = {
+        titulo: document.getElementById('admin-reu-titulo').value,
+        fecha: document.getElementById('admin-reu-fecha').value,
+        hora: document.getElementById('admin-reu-hora').value
+      };
+      reuniones.push(nueva);
+      localStorage.setItem('reuniones', JSON.stringify(reuniones));
+      renderReuniones();
+      e.target.reset();
+    }
+
+    // Renderizar Usuarios en Panel Admin
+    function renderUsuarios() {
+      const lista = document.getElementById('admin-lista-usuarios');
+      lista.innerHTML = usuarios.map((u, index) => `
+        <li style="display:flex; justify-content:space-between; margin-bottom: 0.5rem;">
+          <span>${u.nombre} - C.C. ${u.cedula} (${u.rol})</span>
+          <button class="btn btn-danger" style="padding:0.2rem 0.5rem;" onclick="eliminarUsuario(${index})">Quitar</button>
+        </li>
+      `).join('');
+    }
+
+    function eliminarUsuario(index) {
+      usuarios.splice(index, 1);
+      localStorage.setItem('usuarios', JSON.stringify(usuarios));
+      renderUsuarios();
+    }
+
+    // Cargar Datos Iniciales
+    renderCanciones();
+    renderReuniones();
+    renderUsuarios();
+  </script>
+</body>
+</html>
